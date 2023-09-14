@@ -1,109 +1,58 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
-import styles from "../styles/Home.module.css";
-import Image from "next/image";
+import { Container, Flex, Box, SimpleGrid, Stack, Heading, Skeleton, Text} from "@chakra-ui/react"
+import { ConnectWallet, useAddress, useContract, useMetadata, MediaRenderer, useContractRead, Web3Button, Address } from "@thirdweb-dev/react";
+//import styles from "../styles/Home.module.css";
 import { NextPage } from "next";
 
 const Home: NextPage = () => {
+  const contractAddress = "0xAed7E339F28FF3A01fB0f438f9F178Da7baEa34e";
+  const { contract } = useContract(contractAddress);
+  
+  const address = useAddress();
+
+  const { data: metadata, isLoading: isLoadingMetadata} = useMetadata(contract);
+
+  const { data: totalMinted, isLoading: isLoadingTotalMinted} = useContractRead(contract,"totalMinted");
+
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            Welcome to{" "}
-            <span className={styles.gradientText0}>
-              <a
-                href="https://thirdweb.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                thirdweb.
-              </a>
-            </span>
-          </h1>
+    <Container maxW={"1200px"}>
+      <Flex p={"20px"} justifyContent={"space-between"}>
+      <Box></Box>
+      <ConnectWallet />
+      </Flex> 
+      <Flex h={"90vh"} alignItems={"center"} justifyContent={"center"}>
+        <SimpleGrid columns={2} spacing={10} justifyItems={"center"}>
+          <Box>
+            <Skeleton isLoaded={!isLoadingMetadata}>
+              <MediaRenderer
+                src={(metadata as {image: string})?.image}>
 
-          <p className={styles.description}>
-            Get started by configuring your desired network in{" "}
-            <code className={styles.code}>src/index.js</code>, then modify the{" "}
-            <code className={styles.code}>src/App.js</code> file!
-          </p>
-
-          <div className={styles.connect}>
-            <ConnectWallet
-              dropdownPosition={{
-                side: "bottom",
-                align: "center",
-              }}
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://portal.thirdweb.com/"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/portal-preview.png"
-              alt="Placeholder preview of starter"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText1}>Portal ➜</h2>
-              <p>
-                Guides, references, and resources that will help you build with
-                thirdweb.
-              </p>
-            </div>
-          </a>
-
-          <a
-            href="https://thirdweb.com/dashboard"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/dashboard-preview.png"
-              alt="Placeholder preview of starter"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText2}>Dashboard ➜</h2>
-              <p>
-                Deploy, configure, and manage your smart contracts from the
-                dashboard.
-              </p>
-            </div>
-          </a>
-
-          <a
-            href="https://thirdweb.com/templates"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/templates-preview.png"
-              alt="Placeholder preview of templates"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText3}>Templates ➜</h2>
-              <p>
-                Discover and clone template projects showcasing thirdweb
-                features.
-              </p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </main>
+              </MediaRenderer>
+            </Skeleton>
+          </Box>
+          <Flex direction={"column"} justifyContent={"center"}>
+            <Stack direction={"column"} spacing={4}></Stack>
+            <Skeleton isLoaded={!isLoadingMetadata}>
+              <Heading>{(metadata as {name?: string})?.name}</Heading>
+            </Skeleton>
+            <Skeleton isLoaded={!isLoadingMetadata}>
+              <Text>{(metadata as {description?: string})?.description}</Text>
+            </Skeleton>
+            <Skeleton isLoaded={!isLoadingTotalMinted}>
+              <p>Total minted: {totalMinted?.toNumber(0)}/5</p>
+            </Skeleton>
+            {address ? (
+              <Web3Button 
+                contractAddress={contractAddress}
+                action={(contract) => contract.erc721.claim(1)}
+              >Claim</Web3Button>
+            ) : (
+              <Text>Please connect your wallet to the website</Text>
+            )}
+          </Flex>
+        </SimpleGrid>
+      </Flex>
+    </Container>
   );
 };
 
-export default Home;
+export default Home; 
