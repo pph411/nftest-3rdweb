@@ -1,10 +1,10 @@
 import { Container, Flex, Box, SimpleGrid, Stack, Heading, Skeleton, Text} from "@chakra-ui/react"
-import { ConnectWallet, useAddress, useContract, useMetadata, MediaRenderer, useContractRead, Web3Button, Address } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress, useContract, useMetadata, MediaRenderer, useContractRead, Web3Button } from "@thirdweb-dev/react";
 //import styles from "../styles/Home.module.css";
 import { NextPage } from "next";
 
 const Home: NextPage = () => {
-  const contractAddress = "0xAed7E339F28FF3A01fB0f438f9F178Da7baEa34e";
+  const contractAddress = "insert contract addres";
   const { contract } = useContract(contractAddress);
   
   const address = useAddress();
